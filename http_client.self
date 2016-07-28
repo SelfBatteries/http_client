@@ -129,7 +129,7 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
 
             "parse protocol"
             (url includesSubstring: '://') ifTrue: [
-              tmp: url_copy splitBy: '://'.
+              tmp: url_copy splitOn: '://'.
               parsed protocol: tmp first.
               url_copy: tmp last.
             ].
@@ -138,10 +138,10 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
             url_copy first = '[' "IPv6"
               ifTrue: [
                 (url_copy includesSubstring: ']') ifFalse: [error: 'Invalid IPv6 address!'].
-                tmp: url_copy splitBy: ']'.
+                tmp: url_copy splitOn: ']'.
                 parsed domain: (tmp first) , ']'.
               ] False: [
-                tmp: url_copy splitBy: '/'.
+                tmp: url_copy splitOn: '/'.
                 parsed domain: tmp first.
               ].
 
@@ -171,13 +171,13 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
             parsed domain first = '[' "IPv6"
               ifTrue: [
                 (parsed domain includesSubstring: ']:') ifTrue: [
-                  tmp: parsed domain splitBy: ']:'.
+                  tmp: parsed domain splitOn: ']:'.
                   parsed domain: tmp first , ']'.
                   parsed port: tmp last asInteger.
                 ]
               ] False: [
                 (parsed domain includesSubstring: ':') ifTrue: [
-                  tmp: parsed domain splitBy: ':'.
+                  tmp: parsed domain splitOn: ':'.
                   parsed domain: tmp first.
                   parsed port: tmp last asInteger.
                 ].
@@ -349,41 +349,6 @@ SlotsToOmit: directory fileInTimeString myComment postFileIn revision subpartNam
          'ModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
         
          parent* = bootstrap stub -> 'lobby' -> ().
-        } | ) 
-
- bootstrap addSlotsTo: bootstrap stub -> 'traits' -> 'string' -> () From: ( | {
-         'Category: transforming\x7fCategory: tokenizing\x7fComment: Split the string by the `word`. If the word is empty,
-return string splitted by charactes. If it is nil,
-return list with the whole string.\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
-        
-         splitBy: word = ( |
-             current <- 0.
-             full_size.
-             out.
-            | 
-            out: list copy.
-            word = nil ifTrue: [^out add: self].
-
-            full_size: self size.
-            full_size <= word size ifTrue: [^out].
-            word size = 0 ifTrue: [^self asList.].
-
-            [current <= full_size] whileTrue: [
-              self
-                findSubstring: word
-                StartingAt: current
-                IfPresent: [| :pos. |
-                  out add: (self copyFrom: current UpTo: pos).
-                  current: pos + (word size).
-                ]
-                IfAbsent: [
-                  (current = 0) ifTrue: [^ (list copy) add: self.].
-
-                  out add: (self copyFrom: current UpTo: full_size).
-                  ^out.
-                ].
-            ].
-            ^out).
         } | ) 
 
 
