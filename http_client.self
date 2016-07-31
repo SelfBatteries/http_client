@@ -93,21 +93,10 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> 'parsed_url' -> () From: ( | {
-         'Category: Unittests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
+         'ModuleInfo: Module: http_client InitialContents: FollowSlot'
         
-         assert: b = ( |
-            | 
-            b value ifFalse: [error: 'assertion failure in byteVector unitTests']).
-        } | ) 
-
- bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> 'parsed_url' -> () From: ( | {
-         'Category: Unittests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
-        
-         assert: x Equals: y = ( |
-            | 
-            "This method is useful only because it lets you get at the arguments
-             very easily in the debugger. -- ads, 2/04"
-            assert: x = y).
+         copy = ( |
+            | parent.copy).
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> 'parsed_url' -> () From: ( | {
@@ -142,6 +131,7 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
                 parsed domain: (tmp first) , ']'.
               ] False: [
                 tmp: url_copy splitOn: '/'.
+                (tmp size = 1) ifTrue: [tmp: (url_copy splitOn: '?')]. "handle get parameters"
                 parsed domain: tmp first.
               ].
 
@@ -243,7 +233,16 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
             tmp domain: '[kitakitsune.org]'.
             assert: (fromString: '[kitakitsune.org]') Equals: tmp.
 
+            tmp: fromString: 'http://kitakitsune.org?asd'.
+            assert: tmp domain Equals: 'kitakitsune.org'.
+
             ^true).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> 'parsed_url' -> () From: ( | {
+         'ModuleInfo: Module: http_client InitialContents: InitializeToExpression: (tests suite)'
+        
+         tests* = bootstrap stub -> 'globals' -> 'tests' -> 'suite' -> ().
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
