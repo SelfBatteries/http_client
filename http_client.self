@@ -18,6 +18,13 @@ See the legal/LICENSE file for license information and legal/AUTHORS for authors
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Constants\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
+         clrf = '\x0d
+'.
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
          'Category: Headers\x7fComment: Common subset of headers.\x7fModuleInfo: Module: http_client InitialContents: InitializeToExpression: (nil)'
         
          commonHeaders.
@@ -39,6 +46,27 @@ See the legal/LICENSE file for license information and legal/AUTHORS for authors
             dict: commonHeaders copy.
             dict at: 'User-Agent' Put: 'Mozilla/5.0 (Windows; U; Windows NT 5.1; cs; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.13'.
             ^dict).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: RequestTypes\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
+         getRequest = ( |
+            | 
+            ^self).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: RequestTypes\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
+         headRequest = ( |
+            | ^self).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Constants\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
+         httpVersion = 'HTTP/1.1'.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
@@ -243,6 +271,14 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
          'ModuleInfo: Module: http_client InitialContents: InitializeToExpression: (tests suite)'
         
          tests* = bootstrap stub -> 'globals' -> 'tests' -> 'suite' -> ().
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: RequestTypes\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
+         postRequest = ( |
+            | 
+            ^self).
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
