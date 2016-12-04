@@ -135,11 +135,29 @@ SlotsToOmit: parent prototype.
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
          'Category: Requests\x7fCategory: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
-         parseResponse: socket = ( |
+         parseHeaders: socket = ( |
              buffer.
+             response_obj.
             | 
 
-            ^socket read).
+            response_obj: self response clone.
+
+            buffer: socket readLine splitOn: ' '.
+            response_obj httpVersion: (buffer first).
+            response_obj statusCode: ((buffer at: 1) asInteger).
+
+            ^response_obj).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Requests\x7fCategory: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
+         parseResponse: socket = ( |
+             response_obj.
+            | 
+            response_obj: self parseHeaders: socket.
+
+            ^response_obj).
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
@@ -334,6 +352,45 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
          processGetRequest: url_obj = ( |
             | 
             ^self).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Parsers\x7fCategory: Prototypes\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
+         response = bootstrap setObjectAnnotationOf: bootstrap stub -> 'globals' -> 'http_client' -> 'response' -> () From: ( |
+             {} = 'ModuleInfo: Creator: globals http_client response.
+'.
+            | ) .
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> 'response' -> () From: ( | {
+         'ModuleInfo: Module: http_client InitialContents: InitializeToExpression: (nil)'
+        
+         body.
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> 'response' -> () From: ( | {
+         'ModuleInfo: Module: http_client InitialContents: InitializeToExpression: (dictionary copy.)'
+        
+         headers <- dictionary copy.
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> 'response' -> () From: ( | {
+         'ModuleInfo: Module: http_client InitialContents: InitializeToExpression: (nil)\x7fVisibility: public'
+        
+         httpVersion.
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> 'response' -> () From: ( | {
+         'ModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
+         parent* = bootstrap stub -> 'traits' -> 'clonable' -> ().
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> 'response' -> () From: ( | {
+         'ModuleInfo: Module: http_client InitialContents: InitializeToExpression: (nil)'
+        
+         statusCode.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
