@@ -84,6 +84,7 @@ SlotsToOmit: parent prototype.
 
             socket write: ('HEAD ', (url_obj path), ' ', httpVersion, crlf).
             socket write: 'Host: ', (url_obj domain), crlf.
+            sendHeaders: socket.
             socket write: crlf.
 
             ^parseResponse: socket).
@@ -333,6 +334,16 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
          processGetRequest: url_obj = ( |
             | 
             ^self).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Requests\x7fCategory: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
+         sendHeaders: socket = ( |
+            | 
+            commonHeaders copy do: [ |:v. :k. |
+              socket write: (k, ': ', v, crlf).
+            ]).
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'modules' -> () From: ( | {
