@@ -18,23 +18,40 @@ See the legal/LICENSE file for license information and legal/AUTHORS for authors
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Constants\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+         'Category: Headers\x7fComment: Common subset of headers.\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
-         clrf = '\x0d
-'.
+         commonHeaders <- bootstrap setObjectAnnotationOf: ( [|d|
+	d: dictionary copyRemoveAll.
+	d at: ('Accept') Put: ('text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain').
+	d at: ('Accept-Charset') Put: ('utf-8').
+	d at: ('Accept-Language') Put: ('cs,en-us;q=0.7,en;q=0.3').
+	d at: ('Connection') Put: ('keep-alive').
+	d at: ('Keep-Alive') Put: ('300').
+	d at: ('User-Agent') Put: ('Self HTTP client https://github.com/Bystroushaak/http_client').
+] value) From: ( |
+             {} = 'ModuleInfo: Creator: globals http_client commonHeaders.
+
+CopyDowns:
+globals set. copy 
+SlotsToOmit: parent prototype.
+
+\x7fIsComplete: '.
+            | ) .
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Headers\x7fComment: Common subset of headers.\x7fModuleInfo: Module: http_client InitialContents: InitializeToExpression: (nil)'
+         'Category: Constants\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
-         commonHeaders.
+         crlf = '\x0d
+'.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
          'Category: Headers\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
          defaultHeaders = ( |
-            | ^ffHeaders).
+            | 
+            ^commonHeaders copy).
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
@@ -51,16 +68,25 @@ See the legal/LICENSE file for license information and legal/AUTHORS for authors
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
          'Category: RequestTypes\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
-         getRequest = ( |
-            | 
-            ^self).
+         headRequest = ( |
+            | ^self).
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: RequestTypes\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+         'Category: Requests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
-         headRequest = ( |
-            | ^self).
+         headRequest: url Headers: headers = ( |
+             socket.
+             url_obj.
+            | 
+            url_obj: parsed_url fromString: url.
+            socket: self openConnection: url_obj.
+
+            socket write: ('HEAD ', (url_obj path), ' ', httpVersion, crlf).
+            socket write: 'Host: ', (url_obj domain), crlf.
+            socket write: crlf.
+
+            ^parseResponse: socket).
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
@@ -92,9 +118,27 @@ See the legal/LICENSE file for license information and legal/AUTHORS for authors
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Requests\x7fCategory: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
+         openConnection: url_obj = ( |
+            | 
+            ^ os_file openTCPHost: (url_obj domain) Port: (url_obj portOrDefault)).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
          'ModuleInfo: Module: http_client InitialContents: InitializeToExpression: (traits clonable)'
         
          parent* = bootstrap stub -> 'traits' -> 'clonable' -> ().
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Requests\x7fCategory: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
+         parseResponse: socket = ( |
+             buffer.
+            | 
+
+            ^socket read).
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
@@ -201,6 +245,8 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
                 ].
               ].
 
+            parsed path = '' ifTrue: [parsed path: '/'].
+
             ^parsed).
         } | ) 
 
@@ -247,7 +293,7 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
             tmp protocol: 'http'.
             tmp domain: 'kitakitsune.org'.
             tmp port: 22.
-            tmp path: ''.
+            tmp path: '/'.
 
             assert: (fromString: 'http://kitakitsune.org:22/') Equals: tmp.
 
@@ -282,14 +328,11 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Requests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+         'Category: RequestTypes\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
-         request: url Type: type Data: data Body: body Headers: headers = ( |
-             socket.
-             url_obj.
+         processGetRequest: url_obj = ( |
             | 
-            url_obj: parsed_url fromString: url.
-            socket: os_file openTCPHost: (url_obj domain) asByteVector Port: (url_obj portOrDefault)).
+            ^self).
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'modules' -> () From: ( | {
