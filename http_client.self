@@ -76,6 +76,7 @@ SlotsToOmit: parent prototype.
          'Category: Requests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
          headRequest: url Headers: headers = ( |
+             response.
              socket.
              url_obj.
             | 
@@ -87,7 +88,10 @@ SlotsToOmit: parent prototype.
             sendHeaders: socket.
             socket write: crlf.
 
-            ^parseResponse: socket).
+            response: parseHeaders: socket.
+            socket close.
+
+            ^response).
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
@@ -135,8 +139,24 @@ SlotsToOmit: parent prototype.
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
          'Category: Requests\x7fCategory: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
+         parseHeader: line InTo: dict = ( |
+            | 
+            line
+                findSubstring: ':'
+                IfPresent: [| :index |
+                  dict at: (line copyFrom: 0 UpTo: index)
+                           Put: (line copyFrom: (index + 1) UpTo: (line size)) shrinkwrapped.
+                  ^true.
+                ]
+                IfAbsent: [^false]).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Requests\x7fCategory: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
          parseHeaders: socket = ( |
              buffer.
+             contained_colon.
              response_obj.
             | 
 
@@ -145,6 +165,11 @@ SlotsToOmit: parent prototype.
             buffer: socket readLine splitOn: ' '.
             response_obj httpVersion: (buffer first).
             response_obj statusCode: ((buffer at: 1) asInteger).
+
+            [
+              buffer: socket readLine.
+              contained_colon: (parseHeader: buffer InTo: response_obj headers).
+            ] untilFalse: [ contained_colon ].
 
             ^response_obj).
         } | ) 
