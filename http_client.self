@@ -68,6 +68,27 @@ SlotsToOmit: parent prototype.
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
          'Category: Requests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
+         getRequest: url Headers: headers Parameters: params = ( |
+             response.
+             socket.
+             url_obj.
+            | 
+            url_obj: parsed_url fromString: url.
+            socket: self openConnection: url_obj.
+
+            socket write: 'GET ', url_obj path, ' ', httpVersion, crlf.
+            socket write: 'Host: ', url_obj domain, crlf.
+            sendHeaders: socket.
+            socket write: crlf.
+
+            response: parseHeaders: socket.
+
+            ^response).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Requests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
          headRequest: url Headers: headers = ( |
              response.
              socket.
@@ -162,7 +183,7 @@ SlotsToOmit: parent prototype.
             [
               buffer: socket readLine.
               should_continue: self parseHeader: buffer
-                                    Do: [|:k. :v | response_obj headers at: k Put: v ].
+                                    Do: [| :k. :v | response_obj headers at: k Put: v ].
             ] untilFalse: [ should_continue ].
 
             ^response_obj).
@@ -406,6 +427,34 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
             ]).
         } | ) 
 
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Unittests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
+         test = ( |
+            | 
+            testUrlDecodeEncode.
+
+            ^ true).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Unittests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
+         testUrlDecodeEncode = ( |
+             decoded = 'test:$#@=?%^Q^$'.
+             encoded = 'test%3A%24%23%40%3D%3F%25%5EQ%5E%24'.
+            | 
+
+            assert: decoded urlEncode Equals: encoded.
+            assert: encoded urlDecode Equals: decoded).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'ModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
+         tests* = bootstrap stub -> 'globals' -> 'tests' -> 'suite' -> ().
+        } | ) 
+
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'modules' -> () From: ( | {
          'ModuleInfo: Module: http_client InitialContents: FollowSlot'
         
@@ -498,6 +547,23 @@ SlotsToOmit: directory fileInTimeString myComment postFileIn revision subpartNam
          'ModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
         
          parent* = bootstrap stub -> 'lobby' -> ().
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'traits' -> 'string' -> () From: ( | {
+         'Category: transforming\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
+         urlDecode = ( |
+            | nil).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'traits' -> 'string' -> () From: ( | {
+         'Category: transforming\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
+         urlEncode = ( |
+            | 
+            bytesDo: [|:i|
+              i printLine.
+            ]).
         } | ) 
 
 
