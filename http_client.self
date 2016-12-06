@@ -66,13 +66,6 @@ SlotsToOmit: parent prototype.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: RequestTypes\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
-        
-         headRequest = ( |
-            | ^self).
-        } | ) 
-
- bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
          'Category: Requests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
          headRequest: url Headers: headers = ( |
@@ -83,8 +76,8 @@ SlotsToOmit: parent prototype.
             url_obj: parsed_url fromString: url.
             socket: self openConnection: url_obj.
 
-            socket write: ('HEAD ', (url_obj path), ' ', httpVersion, crlf).
-            socket write: 'Host: ', (url_obj domain), crlf.
+            socket write: 'HEAD ', url_obj path, ' ', httpVersion, crlf.
+            socket write: 'Host: ', url_obj domain, crlf.
             sendHeaders: socket.
             socket write: crlf.
 
@@ -139,13 +132,13 @@ SlotsToOmit: parent prototype.
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
          'Category: Requests\x7fCategory: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
-         parseHeader: line InTo: dict = ( |
+         parseHeader: line Do: blk = ( |
             | 
             line
                 findSubstring: ':'
                 IfPresent: [| :index |
-                  dict at: (line copyFrom: 0 UpTo: index)
-                           Put: (line copyFrom: (index + 1) UpTo: (line size)) shrinkwrapped.
+                  blk value: (line copyFrom: 0 UpTo: index)
+                      With: ((line copyFrom: (index + 1) UpTo: (line size)) shrinkwrapped).
                   ^true.
                 ]
                 IfAbsent: [^false]).
@@ -156,8 +149,8 @@ SlotsToOmit: parent prototype.
         
          parseHeaders: socket = ( |
              buffer.
-             contained_colon.
              response_obj.
+             should_continue.
             | 
 
             response_obj: self response clone.
@@ -168,8 +161,9 @@ SlotsToOmit: parent prototype.
 
             [
               buffer: socket readLine.
-              contained_colon: (parseHeader: buffer InTo: response_obj headers).
-            ] untilFalse: [ contained_colon ].
+              should_continue: self parseHeader: buffer
+                                    Do: [|:k. :v | response_obj headers at: k Put: v ].
+            ] untilFalse: [ should_continue ].
 
             ^response_obj).
         } | ) 
@@ -186,7 +180,7 @@ SlotsToOmit: parent prototype.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Parsers\x7fCategory: Prototypes\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+         'Category: Prototypes\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
          parsed_url <- bootstrap setObjectAnnotationOf: bootstrap stub -> 'globals' -> 'http_client' -> 'parsed_url' -> () From: ( |
              {} = 'Comment: I know that this is not the best possible
@@ -364,23 +358,7 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: RequestTypes\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
-        
-         postRequest = ( |
-            | 
-            ^self).
-        } | ) 
-
- bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: RequestTypes\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
-        
-         processGetRequest: url_obj = ( |
-            | 
-            ^self).
-        } | ) 
-
- bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Parsers\x7fCategory: Prototypes\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+         'Category: Prototypes\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
          response = bootstrap setObjectAnnotationOf: bootstrap stub -> 'globals' -> 'http_client' -> 'response' -> () From: ( |
              {} = 'ModuleInfo: Creator: globals http_client response.
