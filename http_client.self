@@ -561,8 +561,9 @@ SlotsToOmit: directory fileInTimeString myComment postFileIn revision subpartNam
         
          urlEncode = ( |
             | 
-            bytesDo: [|:i|
-              i printLine.
+            bytesDo: [| :i. high. low. |
+              high: self >> 4.
+              low: self && 15. "00001111 mask"
             ]).
         } | ) 
 
