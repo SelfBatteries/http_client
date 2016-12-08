@@ -560,11 +560,31 @@ SlotsToOmit: directory fileInTimeString myComment postFileIn revision subpartNam
          'Category: transforming\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
          urlEncode = ( |
+             alpha.
+             c.
+             digit.
+             out.
+             reserved.
+             unreserved.
+             whitelist.
             | 
+            out: mutableString clone.
+
+            "Datasets specified by RFC 3986"
+            reserved: ':/?#[]@!$&\'()*+,;=' asSet.
+            alpha: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' asSet.
+            digit: '0123456789' asSet.
+            unreserved: ('-._~' asSet), alpha, digit.
+            whitelist: reserved, unreserved.
+
             bytesDo: [| :i. high. low. |
-              high: self >> 4.
-              low: self && 15. "00001111 mask"
-            ]).
+              c: i asCharacter.
+              (whitelist includes: c)
+                ifTrue: [out: out, c]
+                False: [out: out, '%', (i hexPrintString)].
+            ].
+
+            ^out).
         } | ) 
 
 
