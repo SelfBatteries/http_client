@@ -553,7 +553,27 @@ SlotsToOmit: directory fileInTimeString myComment postFileIn revision subpartNam
          'Category: transforming\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
          urlDecode = ( |
-            | nil).
+             out.
+             tokens.
+            | 
+            tokens: self splitOn: '%'.
+
+            tokens size == 0 ifTrue: [^''].
+            tokens size == 1 ifTrue: [^tokens first].
+
+            out: tokens removeFirst.
+            tokens do: [| :token |
+              token size < 2
+                ifTrue: [out: (out, token)]
+                False: [| hex_pair. |
+                  hex_pair: (token at: 0), (token at: 1).
+                  out: out,
+                       (hex_pair hexAsInteger asCharacter),
+                       (token copyFrom: 2 UpTo: (token size)).
+                ].
+            ].
+
+            ^out).
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'traits' -> 'string' -> () From: ( | {
