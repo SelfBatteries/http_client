@@ -197,7 +197,6 @@ SlotsToOmit: parent prototype.
          'Category: Requests\x7fCategory: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
          parseResponse: response = ( |
-             buffer.
              content_length.
              status_code.
              transfer_encoding.
@@ -295,8 +294,7 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
               ].
 
             tmp removeFirst.
-            url_copy: ((tmp size = 1) ifTrue: [tmp first] False: [tmp asString]).
-            parsed path: url_copy.
+            parsed path: self parsePath: tmp.
 
             "parse port"
             parsed: parsePort: parsed.
@@ -308,6 +306,16 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
          'ModuleInfo: Module: http_client InitialContents: FollowSlot'
         
          parent* = bootstrap stub -> 'traits' -> 'clonable' -> ().
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> 'parsed_url' -> () From: ( | {
+         'Category: Parsers\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
+         parsePath: splitted = ( |
+            | 
+            (splitted size = 0) ifTrue: [^'/'].
+            (splitted size = 1) ifTrue: [^'/', splitted first].
+            ^'/', (splitted joinUsing: '/')).
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> 'parsed_url' -> () From: ( | {
@@ -397,6 +405,12 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
             tmp: fromString: 'http://kitakitsune.org?asd'.
             assert: tmp domain Equals: 'kitakitsune.org'.
 
+            tmp: fromString: 'https://www.httpwatch.com/httpgallery/chunked/chunkedimage.aspx'.
+            assert: tmp protocol Equals: 'https'.
+            assert: tmp domain Equals: 'www.httpwatch.com'.
+            assert: tmp portOrDefault Equals: 443.
+            assert: tmp path Equals: '/httpgallery/chunked/chunkedimage.aspx'.
+
             ^true).
         } | ) 
 
@@ -410,7 +424,22 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
          'Category: Requests\x7fCategory: Internals\x7fCategory: Body reading modes\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
          readChunked: response = ( |
+             chunk_length.
             | 
+            [ | size_line. |
+              "It may take a while to get line with chunk size.."
+              [ | circuit_breaker <- 0. |
+                size_line: response socket readLine shrinkwrapped.
+                circuit_breaker: circuit_breaker + 1.
+                circuit_breaker > 10
+                  ifTrue: [error: 'Can\'t find chunk definition!'].
+              ] untilTrue: [size_line size > 0].
+
+              chunk_length: size_line shrinkwrapped hexAsInteger.
+              chunk_length > 0
+                ifTrue: [response body: response body, socket readCount: chunk_length.].
+            ] untilFalse: [ chunk_length != 0 ].
+
             ^response).
         } | ) 
 
@@ -429,6 +458,7 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
          'Category: Requests\x7fCategory: Internals\x7fCategory: Body reading modes\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
          readUntilEnd: response = ( |
+             buffer.
             | 
             [
               buffer: response socket readCount: 1024 IfFail: [^response].
