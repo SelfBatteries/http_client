@@ -192,12 +192,41 @@ SlotsToOmit: parent prototype.
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
          'Category: Requests\x7fCategory: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
-         parseResponse: socket = ( |
-             response_obj.
+         parseResponse: socket Response: response = ( |
+             content_length.
+             transfer_encoding.
             | 
-            response_obj: self parseHeaders: socket.
+            status_code: response statusCode.
 
-            ^response_obj).
+            "Special codes with no data - defined in RFC 2616, section 4.4
+            (http://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.4)"
+            ((status_code >= 100) && (status_code < 200)) ||
+            (status_code = 204) ||
+            (status_code = 304)
+              ifTrue: [^response].
+
+
+            "Chunked requests"
+            transfer_encoding: response headers at: 'Transfer-Encoding' IfAbsent: nil.
+            (transfer_encoding uncapitalizeAll) = 'chunked' ifTrue: [
+
+
+              ^response.
+            ].
+
+            "Requests specified by ContentLength"
+            content_length: response headers at: 'Content-Length' IfAbsent: nil.
+            content_length != nil ifTrue: [
+              content_length asInteger.
+
+              ^response.
+            ].
+
+            [
+
+            ] untilFalse: [socket isLive].
+
+            ^response).
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
@@ -442,7 +471,7 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
         
          testUrlDecodeEncode = ( |
              decoded = 'test:$#@=?%^Q^$'.
-             encoded = 'test%3A%24%23%40%3D%3F%25%5EQ%5E%24'.
+             encoded = 'test%3a%24%23%40%3d%3f%25%5eQ%5e%24'.
             | 
 
             assert: decoded urlEncode Equals: encoded.
@@ -591,7 +620,7 @@ SlotsToOmit: directory fileInTimeString myComment postFileIn revision subpartNam
             out: mutableString clone.
 
             "Datasets specified by RFC 3986"
-            reserved: ':/?#[]@!$&\'()*+,;=' asSet.
+            reserved: '!()*' asSet. "It should be ':/?#[]@!$&\'()*+,;=' ?"
             alpha: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' asSet.
             digit: '0123456789' asSet.
             unreserved: ('-._~' asSet), alpha, digit.
