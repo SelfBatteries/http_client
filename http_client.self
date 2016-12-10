@@ -82,7 +82,9 @@ SlotsToOmit: parent prototype.
             socket write: crlf.
 
             response: parseHeaders: socket.
+            parseResponse: response.
 
+            response socket: nil.
             ^response).
         } | ) 
 
@@ -105,6 +107,7 @@ SlotsToOmit: parent prototype.
             response: parseHeaders: socket.
             socket close.
 
+            response socket: nil.
             ^response).
         } | ) 
 
@@ -175,6 +178,7 @@ SlotsToOmit: parent prototype.
             | 
 
             response_obj: self response clone.
+            response_obj socket: socket.
 
             buffer: socket readLine splitOn: ' '.
             response_obj httpVersion: (buffer first).
@@ -192,8 +196,10 @@ SlotsToOmit: parent prototype.
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
          'Category: Requests\x7fCategory: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
-         parseResponse: socket Response: response = ( |
+         parseResponse: response = ( |
+             buffer.
              content_length.
+             status_code.
              transfer_encoding.
             | 
             status_code: response statusCode.
@@ -205,28 +211,21 @@ SlotsToOmit: parent prototype.
             (status_code = 304)
               ifTrue: [^response].
 
+            response body: ''.
 
             "Chunked requests"
             transfer_encoding: response headers at: 'Transfer-Encoding' IfAbsent: nil.
-            (transfer_encoding uncapitalizeAll) = 'chunked' ifTrue: [
-
-
-              ^response.
+            transfer_encoding != nil ifTrue: [
+              transfer_encoding uncapitalizeAll = 'chunked'
+                ifTrue: [^readChunked: response].
             ].
 
             "Requests specified by ContentLength"
             content_length: response headers at: 'Content-Length' IfAbsent: nil.
-            content_length != nil ifTrue: [
-              content_length asInteger.
+            content_length != nil
+              ifTrue: [^readContentLength: content_length asInteger Response: response.].
 
-              ^response.
-            ].
-
-            [
-
-            ] untilFalse: [socket isLive].
-
-            ^response).
+            ^readUntilEnd: response).
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
@@ -408,6 +407,38 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Requests\x7fCategory: Internals\x7fCategory: Body reading modes\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
+         readChunked: response = ( |
+            | 
+            ^response).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Requests\x7fCategory: Internals\x7fCategory: Body reading modes\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
+         readContentLength: length Response: response = ( |
+            | 
+            response body: response socket readCount: length
+                                  IfFail: [^response].
+
+            ^response).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Requests\x7fCategory: Internals\x7fCategory: Body reading modes\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
+         readUntilEnd: response = ( |
+            | 
+            [
+              buffer: response socket readCount: 1024 IfFail: [^response].
+              response body: response_body, buffer.
+            ] untilFalse: [response socket isLive && (buffer size != 0)].
+
+            ^response).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
          'Category: Prototypes\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
          response = bootstrap setObjectAnnotationOf: bootstrap stub -> 'globals' -> 'http_client' -> 'response' -> () From: ( |
@@ -438,6 +469,12 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
          'ModuleInfo: Module: http_client InitialContents: FollowSlot'
         
          parent* = bootstrap stub -> 'traits' -> 'clonable' -> ().
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> 'response' -> () From: ( | {
+         'Category: Internals\x7fModuleInfo: Module: http_client InitialContents: InitializeToExpression: (nil.)'
+        
+         socket.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> 'response' -> () From: ( | {
