@@ -84,7 +84,9 @@ SlotsToOmit: parent prototype.
             response: parseHeaders: socket.
             parseResponse: response.
 
+            socket close.
             response socket: nil.
+
             ^response).
         } | ) 
 
@@ -105,9 +107,10 @@ SlotsToOmit: parent prototype.
             socket write: crlf.
 
             response: parseHeaders: socket.
-            socket close.
 
+            socket close.
             response socket: nil.
+
             ^response).
         } | ) 
 
@@ -144,7 +147,25 @@ SlotsToOmit: parent prototype.
         
          openConnection: url_obj = ( |
             | 
+            url_obj protocol = 'https' ifTrue: [error: 'Sorry, can\'t process HTTPS!'].
+
             ^ os_file openTCPHost: (url_obj domain) Port: (url_obj portOrDefault)).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Unittests\x7fComment: <?PHP
+echo \"\\n\\n\\n-----\\n\";
+echo \"GET:\\n\";
+foreach($_GET as $key => $value){
+    echo \"\\t\".$key.\"=\".$value.\"\\n\";
+}
+echo \"POST:\\n\";
+foreach($_POST as $key => $value){
+    echo \"\\t\".$key.\"=\".$value.\"\\n\";
+}
+?>\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
+         paramsTestURL = 'http://necpmvtsv.wz.cz/params.php'.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
@@ -430,6 +451,7 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
               "It may take a while to get line with chunk size.."
               [ | circuit_breaker <- 0. |
                 size_line: response socket readLine shrinkwrapped.
+                ('size_line: ', size_line) printLine.
                 circuit_breaker: circuit_breaker + 1.
                 circuit_breaker > 10
                   ifTrue: [error: 'Can\'t find chunk definition!'].
