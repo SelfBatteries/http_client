@@ -451,7 +451,6 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
               "It may take a while to get line with chunk size.."
               [ | circuit_breaker <- 0. |
                 size_line: response socket readLine shrinkwrapped.
-                ('size_line: ', size_line) printLine.
                 circuit_breaker: circuit_breaker + 1.
                 circuit_breaker > 10
                   ifTrue: [error: 'Can\'t find chunk definition!'].
@@ -459,7 +458,7 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
 
               chunk_length: size_line shrinkwrapped hexAsInteger.
               chunk_length > 0
-                ifTrue: [response body: response body, socket readCount: chunk_length.].
+                ifTrue: [response body: response body, (response socket readCount: chunk_length).].
             ] untilFalse: [ chunk_length != 0 ].
 
             ^response).
