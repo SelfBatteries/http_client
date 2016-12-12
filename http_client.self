@@ -1,23 +1,8 @@
  '$Revision:$'
- 'Copyright (c) 2016 Bystroushaak
-Permission is hereby granted, free of charge, to any person
-obtaining a copy of this software and associated documentation
-files (the \"Software\"), to deal in the Software without
-restriction, including without limitation the rights to use,
-copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following
-conditions:
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-OTHER DEALINGS IN THE SOFTWARE.'
+ '
+Copyright 1992-2016 AUTHORS.
+See the legal/LICENSE file for license information and legal/AUTHORS for authors.
+'
 ["preFileIn" self] value
 
 
@@ -52,6 +37,12 @@ SlotsToOmit: parent prototype.
 
 \x7fIsComplete: '.
             | ) .
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Prototypes\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
+         crc = bootstrap stub -> 'globals' -> 'nil' -> ().
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
