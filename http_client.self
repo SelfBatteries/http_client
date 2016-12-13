@@ -718,8 +718,27 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
          test = ( |
             | 
             testUrlDecodeEncode.
+            testChunked.
 
             ^ true).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Unittests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
+         testChunked = ( |
+             crc_of_result.
+             resp.
+            | 
+            resp: getRequest: 'http://www.httpwatch.com/httpgallery/chunked/chunkedimage.aspx'
+                  Headers: nil
+                  Parameters: nil.
+
+            crc_of_result: crc32 computeCRC: (resp body asString).
+
+            assert: crc_of_result Equals: ('ca408eb6' hexAsInteger).
+
+            ^true).
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
