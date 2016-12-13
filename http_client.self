@@ -118,9 +118,9 @@ Ported by Bystroushaak.\x7fModuleInfo: Creator: globals http_client crc32.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> 'crc32' -> () From: ( | {
-         'Category: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
+         'Category: Internals\x7fModuleInfo: Module: http_client InitialContents: InitializeToExpression: (\'edb88320\' hexAsInteger asInt64.)\x7fVisibility: private'
         
-         crc32_constant = bootstrap stub -> 'globals' -> 'crc32' -> 'crc32_constant' -> ().
+         crc32_constant = 'edb88320' hexAsInteger asInt64.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> 'crc32' -> () From: ( | {
@@ -130,9 +130,9 @@ Ported by Bystroushaak.\x7fModuleInfo: Creator: globals http_client crc32.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> 'crc32' -> () From: ( | {
-         'Category: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
+         'Category: Internals\x7fModuleInfo: Module: http_client InitialContents: InitializeToExpression: (\'ffffffff\' hexAsInteger asInt64.)\x7fVisibility: private'
         
-         ffffffff = bootstrap stub -> 'globals' -> 'crc32' -> 'ffffffff' -> ().
+         ffffffff = 'ffffffff' hexAsInteger asInt64.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> 'crc32' -> () From: ( | {
@@ -196,7 +196,7 @@ Ported by Bystroushaak.\x7fModuleInfo: Creator: globals http_client crc32.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> 'crc32' -> () From: ( | {
-         'ModuleInfo: Module: http_client InitialContents: FollowSlot'
+         'ModuleInfo: Module: http_client InitialContents: InitializeToExpression: (tests suite.)'
         
          tests* = bootstrap stub -> 'globals' -> 'tests' -> 'suite' -> ().
         } | ) 
@@ -204,7 +204,7 @@ Ported by Bystroushaak.\x7fModuleInfo: Creator: globals http_client crc32.
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> 'crc32' -> () From: ( | {
          'Category: Internals\x7fModuleInfo: Module: http_client InitialContents: InitializeToExpression: (nil.)\x7fVisibility: private'
         
-         working_register <- bootstrap stub -> 'globals' -> 'nil' -> ().
+         working_register.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
