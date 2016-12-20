@@ -500,7 +500,7 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
               ].
 
             tmp removeFirst.
-            parsed path: self parsePath: tmp.
+            parsed path: (self parsePath: tmp ContainsQuestionMark: (url includesSubstring: '?')).
 
             "parse port"
             parsed: parsePort: parsed.
@@ -517,11 +517,14 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> 'parsed_url' -> () From: ( | {
          'Category: Parsers\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
-         parsePath: splitted = ( |
+         parsePath: splitted ContainsQuestionMark: contains_qm = ( |
+             qm.
             | 
+            contains_qm ifTrue: [qm: '?'] False: [qm: ''].
+
             (splitted size = 0) ifTrue: [^'/'].
-            (splitted size = 1) ifTrue: [^'/', splitted first].
-            ^'/', (splitted joinUsing: '/')).
+            (splitted size = 1) ifTrue: [^'/', qm, splitted first].
+            ^'/', qm, (splitted joinUsing: '/')).
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> 'parsed_url' -> () From: ( | {
@@ -610,6 +613,7 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
 
             tmp: fromString: 'http://kitakitsune.org?asd'.
             assert: tmp domain Equals: 'kitakitsune.org'.
+            assert: tmp path Equals: '/?asd'.
 
             tmp: fromString: 'https://www.httpwatch.com/httpgallery/chunked/chunkedimage.aspx'.
             assert: tmp protocol Equals: 'https'.
@@ -759,6 +763,8 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
             testUrlDecodeEncode.
             testSerializeGetParams.
             testGetParamsToURL.
+
+            self parsed_url test.
 
             "integration tests"
             run_integration ifTrue: [
