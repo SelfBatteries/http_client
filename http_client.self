@@ -748,18 +748,28 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
          'Category: Unittests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: public'
         
          test = ( |
+            | test: true).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Unittests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: public'
+        
+         test: run_integration = ( |
             | 
             testUrlDecodeEncode.
-            testChunked.
             testSerializeGetParams.
             testGetParamsToURL.
 
+            "integration tests"
+            run_integration ifTrue: [
+              testChunked.
+            ].
 
             ^ true).
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Unittests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
+         'Category: Unittests\x7fCategory: Integration\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
         
          testChunked = ( |
              crc_of_result.
@@ -814,7 +824,7 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Unittests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+         'Category: Unittests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
         
          testGetParamsToURL: url Params: params Equals: val = ( |
             | 
