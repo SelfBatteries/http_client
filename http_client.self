@@ -234,6 +234,23 @@ Ported by Bystroushaak.\x7fModuleInfo: Creator: globals http_client crc32.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Requests\x7fCategory: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
+         getParamsToURL: requested_url Params: params = ( |
+             params_joiner.
+            | 
+
+            params size = 0 ifTrue: [^requested_url].
+
+            requested_url
+              findSubstring: '?'
+              IfPresent: [ params_joiner: '&' ]
+              IfAbsent: [ params_joiner: '?' ].
+
+            ^(requested_url, params_joiner, serializeGetParams: params)).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
          'Category: Requests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
          getRequest: url Headers: headers Parameters: params = ( |
@@ -331,7 +348,7 @@ echo \"POST:\\n\";
 foreach($_POST as $key => $value){
     echo \"\\t\".$key.\"=\".$value.\"\\n\";
 }
-?>\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+?>\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
         
          paramsTestURL = 'http://necpmvtsv.wz.cz/params.php'.
         } | ) 
@@ -713,18 +730,36 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Unittests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+         'Category: Requests\x7fCategory: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
+         serializeGetParams: params = ( |
+             out.
+            | 
+            params size = 0 ifTrue: [^''].
+
+            out: params copyMappedBy: [|:val. :key.|
+              (key urlEncode), '=', (val urlEncode)
+            ].
+
+            out asSequence joinUsing: '&').
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Unittests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: public'
         
          test = ( |
             | 
             testUrlDecodeEncode.
             testChunked.
+            testSerializeGetParams.
+            testGetParamsToURL.
+
 
             ^ true).
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Unittests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+         'Category: Unittests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
         
          testChunked = ( |
              crc_of_result.
@@ -742,7 +777,66 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Unittests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
+        
+         testGetParamsToURL = ( |
+             url.
+            | 
+            url: 'http://kitakitsune.org/'.
+
+            testGetParamsToURL: 'http://kitakitsune.org'
+              Params: test_blank_dict
+              Equals: 'http://kitakitsune.org'.
+
+            testGetParamsToURL: 'http://kitakitsune.org'
+              Params: test_one_element_dict
+              Equals: 'http://kitakitsune.org?key=val'.
+
+            testGetParamsToURL: 'http://kitakitsune.org'
+              Params: test_multi_element_dict
+              Equals: 'http://kitakitsune.org?key=val&something=else&last=this%20is%20last%20value'.
+
+
+            "test multi element dicts with URL which already have parameters"
+            testGetParamsToURL: 'http://kitakitsune.org?something=already'
+              Params: test_blank_dict
+              Equals: 'http://kitakitsune.org?something=already'.
+
+            testGetParamsToURL: 'http://kitakitsune.org?something=already'
+              Params: test_one_element_dict
+              Equals: 'http://kitakitsune.org?something=already&key=val'.
+
+            testGetParamsToURL: 'http://kitakitsune.org?something=already'
+              Params: test_multi_element_dict
+              Equals: 'http://kitakitsune.org?something=already&key=val&something=else&last=this%20is%20last%20value'.
+
+            ^true).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
          'Category: Unittests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
+         testGetParamsToURL: url Params: params Equals: val = ( |
+            | 
+            ^assert: (getParamsToURL: url Params: params)
+             Equals: val).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Unittests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
+        
+         testSerializeGetParams = ( |
+            | 
+            assert: (serializeGetParams: test_blank_dict) Equals: ''.
+            assert: (serializeGetParams: test_one_element_dict) Equals: 'key=val'.
+            assert: (serializeGetParams: test_multi_element_dict)
+              Equals: 'key=val&something=else&last=this%20is%20last%20value'.
+
+            ^true).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Unittests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
         
          testUrlDecodeEncode = ( |
              decoded = 'test:$#@=?%^Q^$'.
@@ -751,6 +845,40 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
 
             assert: decoded urlEncode Equals: encoded.
             assert: encoded urlDecode Equals: decoded).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Unittests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
+        
+         test_blank_dict = ( |
+            | 
+            ^dictionary copy).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Unittests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
+        
+         test_multi_element_dict = ( |
+             multi_element_dict.
+            | 
+
+            multi_element_dict: orderedDictionary copy.
+            multi_element_dict at: 'key' Put: 'val'.
+            multi_element_dict at: 'something' Put: 'else'.
+            multi_element_dict at: 'last' Put: 'this is last value'.
+
+            ^multi_element_dict).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Unittests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
+        
+         test_one_element_dict = ( |
+             one_element_dict.
+            | 
+            one_element_dict: dictionary copy.
+            one_element_dict at: 'key' Put: 'val'.
+            ^one_element_dict).
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
