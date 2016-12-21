@@ -473,12 +473,14 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
          'ModuleInfo: Module: http_client InitialContents: FollowSlot'
         
          fromString: url = ( |
+             contains_qm.
              parsed.
              tmp.
              url_copy.
             | 
             parsed: self copy.
             url_copy: url copy.
+            contains_qm: false.
 
             "parse protocol"
             (url includesSubstring: '://') ifTrue: [
@@ -495,12 +497,15 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
                 parsed domain: (tmp first) , ']'.
               ] False: [
                 tmp: url_copy splitOn: '/'.
-                (tmp size = 1) ifTrue: [tmp: (url_copy splitOn: '?')]. "handle get parameters"
+                (tmp size = 1) ifTrue: [
+                  tmp: (url_copy splitOn: '?').
+                  contains_qm: url includesSubstring: '?'.
+                  ]. "handle get parameters"
                 parsed domain: tmp first.
               ].
 
             tmp removeFirst.
-            parsed path: (self parsePath: tmp ContainsQuestionMark: (url includesSubstring: '?')).
+            parsed path: (self parsePath: tmp ContainsQuestionMark: contains_qm).
 
             "parse port"
             parsed: parsePort: parsed.
