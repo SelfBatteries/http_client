@@ -240,6 +240,7 @@ Ported by Bystroushaak.\x7fModuleInfo: Creator: globals http_client crc32.
              params_joiner.
             | 
 
+            params == nil ifTrue: [^requested_url].
             params size = 0 ifTrue: [^requested_url].
 
             requested_url
@@ -261,7 +262,11 @@ Ported by Bystroushaak.\x7fModuleInfo: Creator: globals http_client crc32.
             url_obj: parsed_url fromString: url.
             socket: self openConnection: url_obj.
 
-            socket write: 'GET ', url_obj path, ' ', httpVersion, crlf.
+            socket write: 'GET ',
+                           (getParamsToURL: (url_obj path) Params: params),
+                           ' ',
+                           httpVersion,
+                           crlf.
             socket write: 'Host: ', url_obj domain, crlf.
             sendHeaders: socket.
             socket write: crlf.
@@ -431,6 +436,19 @@ foreach($_POST as $key => $value){
               ifTrue: [^readContentLength: content_length asInteger Response: response.].
 
             ^readUntilEnd: response).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Unittests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
+        
+         parseTestURLResult: result = ( |
+             cleaned_body.
+            | 
+            cleaned_body: result body splitOn: '-----'.
+            cleaned_body removeFirst.
+            cleaned_body: cleaned_body joinUsing: '-----'.
+
+            ^ cleaned_body shrinkwrapped).
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
@@ -778,6 +796,7 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
             "integration tests"
             run_integration ifTrue: [
               testChunked.
+              testGetParameters.
             ].
 
             ^ true).
@@ -802,12 +821,32 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Unittests\x7fCategory: Integration\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
+        
+         testGetParameters = ( |
+             tmp.
+            | 
+            tmp: parseTestURLResult: (getRequest: paramsTestURL
+                                      Headers: nil
+                                      Parameters: test_one_element_dict).
+
+            assert: tmp Equals: 'GET:\n\tkey=val\nPOST:'.
+
+            ^true).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
          'Category: Unittests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
         
          testGetParamsToURL = ( |
              url.
             | 
             url: 'http://kitakitsune.org/'.
+
+            "test nil"
+            testGetParamsToURL: 'http://kitakitsune.org'
+              Params: nil
+              Equals: 'http://kitakitsune.org'.
 
             testGetParamsToURL: 'http://kitakitsune.org'
               Params: test_blank_dict
