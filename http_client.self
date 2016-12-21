@@ -615,6 +615,10 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
             assert: tmp domain Equals: 'kitakitsune.org'.
             assert: tmp path Equals: '/?asd'.
 
+            tmp: fromString: 'http://kitakitsune.org/asd?key=val'.
+            assert: tmp domain Equals: 'kitakitsune.org'.
+            assert: tmp path Equals: '/asd?key=val'.
+
             tmp: fromString: 'https://www.httpwatch.com/httpgallery/chunked/chunkedimage.aspx'.
             assert: tmp protocol Equals: 'https'.
             assert: tmp domain Equals: 'www.httpwatch.com'.
