@@ -268,7 +268,7 @@ Ported by Bystroushaak.\x7fModuleInfo: Creator: globals http_client crc32.
                            httpVersion,
                            crlf.
             socket write: 'Host: ', url_obj domain, crlf.
-            sendHeaders: socket.
+            sendHeaders: headers To: socket.
             socket write: crlf.
 
             response: parseHeaders: socket.
@@ -293,7 +293,7 @@ Ported by Bystroushaak.\x7fModuleInfo: Creator: globals http_client crc32.
 
             socket write: 'HEAD ', url_obj path, ' ', httpVersion, crlf.
             socket write: 'Host: ', url_obj domain, crlf.
-            sendHeaders: socket.
+            sendHeaders: headers To: socket.
             socket write: crlf.
 
             response: parseHeaders: socket.
@@ -658,6 +658,45 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Requests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
+         postRequest: url Headers: headers GETParameters: get_params POSTParamaters: post_params = ( |
+             response.
+             socket.
+             url_encoded_params.
+             url_obj.
+            | 
+            url_obj: parsed_url fromString: url.
+            socket: self openConnection: url_obj.
+
+            socket write: 'POST ',
+                           (getParamsToURL: (url_obj path) Params: params),
+                           ' ',
+                           httpVersion,
+                           crlf.
+            socket write: 'Host: ', url_obj domain, crlf.
+
+            url_encoded_params: getParamsToURL: '' Params: post_params.
+            headers at: 'Content-Type'
+                   Put: 'application/x-www-form-urlencoded'.
+            headers at: 'Content-Length'
+                   Put: url_encoded_params size asString.
+
+            sendHeaders: headers To: socket.
+            socket write: crlf.
+            socket write: url_encoded_params.
+            socket write crlf.
+
+            response: parseHeaders: socket.
+            parseResponse: response.
+
+            socket close.
+            response socket: nil.
+
+            ^response).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
          'Category: Requests\x7fCategory: Internals\x7fCategory: Body reading modes\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
          readChunked: response = ( |
@@ -753,9 +792,11 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
          'Category: Requests\x7fCategory: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
-         sendHeaders: socket = ( |
+         sendHeaders: headers To: socket = ( |
             | 
-            commonHeaders copy do: [ |:v. :k. |
+            headers == nil ifTrue: [^nil].
+
+            headers do: [ |:v. :k. |
               socket write: (k, ': ', v, crlf).
             ]).
         } | ) 
