@@ -661,6 +661,7 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
          'Category: Requests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
          postRequest: url Headers: headers GETParameters: get_params POSTParameters: post_params = ( |
+             modified_headers.
              response.
              socket.
              url_encoded_params.
@@ -678,13 +679,13 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
 
             url_encoded_params: getParamsToURL: '' Params: post_params.
 
-            headers: headers copy.
-            headers at: 'Content-Type'
-                   Put: 'application/x-www-form-urlencoded'.
-            headers at: 'Content-Length'
-                   Put: url_encoded_params size asString.
+            modified_headers: headers copy.
+            modified_headers at: 'Content-Type'
+                             Put: 'application/x-www-form-urlencoded'.
+            modified_headers at: 'Content-Length'
+                             Put: url_encoded_params size asString.
 
-            sendHeaders: headers To: socket.
+            sendHeaders: modified_headers To: socket.
             socket write: crlf.
             socket write: url_encoded_params.
             socket write: crlf.
