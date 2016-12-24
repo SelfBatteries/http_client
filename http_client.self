@@ -660,7 +660,7 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
          'Category: Requests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
-         postRequest: url Headers: headers GETParameters: get_params POSTParamaters: post_params = ( |
+         postRequest: url Headers: headers GETParameters: get_params POSTParameters: post_params = ( |
              response.
              socket.
              url_encoded_params.
@@ -670,13 +670,15 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
             socket: self openConnection: url_obj.
 
             socket write: 'POST ',
-                           (getParamsToURL: (url_obj path) Params: params),
+                           (getParamsToURL: (url_obj path) Params: get_params),
                            ' ',
                            httpVersion,
                            crlf.
             socket write: 'Host: ', url_obj domain, crlf.
 
             url_encoded_params: getParamsToURL: '' Params: post_params.
+
+            headers: headers copy.
             headers at: 'Content-Type'
                    Put: 'application/x-www-form-urlencoded'.
             headers at: 'Content-Length'
@@ -685,7 +687,7 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
             sendHeaders: headers To: socket.
             socket write: crlf.
             socket write: url_encoded_params.
-            socket write crlf.
+            socket write: crlf.
 
             response: parseHeaders: socket.
             parseResponse: response.
