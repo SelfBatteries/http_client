@@ -249,7 +249,7 @@ Ported by Bystroushaak.\x7fModuleInfo: Creator: globals http_client crc32.
                            ' ',
                            httpVersion,
                            crlf.
-            socket write: 'Host: ', url_obj domain, crlf.
+            socket write: 'Host: ', url_obj composeHost, crlf.
             sendHeaders: headers To: socket.
             socket write: crlf.
 
@@ -274,7 +274,7 @@ Ported by Bystroushaak.\x7fModuleInfo: Creator: globals http_client crc32.
             socket: self openConnection: url_obj.
 
             socket write: 'HEAD ', url_obj path, ' ', httpVersion, crlf.
-            socket write: 'Host: ', url_obj domain, crlf.
+            socket write: 'Host: ', url_obj composeHost, crlf.
             sendHeaders: headers To: socket.
             socket write: crlf.
 
@@ -315,7 +315,7 @@ Ported by Bystroushaak.\x7fModuleInfo: Creator: globals http_client crc32.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Requests\x7fCategory: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+         'Category: Requests\x7fCategory: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
         
          openConnection: url_obj = ( |
             | 
@@ -341,7 +341,7 @@ foreach($_POST as $key => $value){
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Requests\x7fCategory: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+         'Category: Requests\x7fCategory: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
         
          paramsToURL: requested_url Params: params = ( |
              params_joiner.
@@ -368,7 +368,7 @@ foreach($_POST as $key => $value){
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Requests\x7fCategory: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+         'Category: Requests\x7fCategory: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
         
          parseHeader: line Do: blk = ( |
             | 
@@ -383,7 +383,7 @@ foreach($_POST as $key => $value){
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Requests\x7fCategory: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+         'Category: Requests\x7fCategory: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
         
          parseHeaders: socket = ( |
              buffer.
@@ -408,7 +408,7 @@ foreach($_POST as $key => $value){
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Requests\x7fCategory: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+         'Category: Requests\x7fCategory: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
         
          parseResponse: response = ( |
              content_length.
@@ -473,6 +473,20 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
             (domain = other domain) &&
             (port = other port) &&
             (path = other path)).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> 'parsed_url' -> () From: ( | {
+         'ModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: public'
+        
+         composeHost = ( |
+             host.
+            | 
+            host: self domain.
+
+            self portOrDefault != 80
+              ifTrue: [ host: host, ':', self portOrDefault asString ].
+
+            ^host).
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> 'parsed_url' -> () From: ( | {
@@ -649,6 +663,24 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
             assert: tmp portOrDefault Equals: 443.
             assert: tmp path Equals: '/httpgallery/chunked/chunkedimage.aspx'.
 
+            testComposeHost.
+
+            ^true).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> 'parsed_url' -> () From: ( | {
+         'Category: Unittests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
+        
+         testComposeHost = ( |
+             default_port_url.
+             special_port_url.
+            | 
+            default_port_url: self fromString: 'http://kitakitsune.org'.
+            special_port_url: self fromString: 'http://kitakitsune.org:8080'.
+
+            assert: (default_port_url composeHost) Equals: 'kitakitsune.org'.
+            assert: (special_port_url composeHost) Equals: 'kitakitsune.org:8080'.
+
             ^true).
         } | ) 
 
@@ -676,7 +708,7 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
                            ' ',
                            httpVersion,
                            crlf.
-            socket write: 'Host: ', url_obj domain, crlf.
+            socket write: 'Host: ', url_obj composeHost, crlf.
 
             url_encoded_params: paramsToURL: '' Params: post_params.
 
@@ -806,7 +838,7 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Requests\x7fCategory: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+         'Category: Requests\x7fCategory: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
         
          sendHeaders: headers To: socket = ( |
             | 
@@ -818,7 +850,7 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Requests\x7fCategory: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+         'Category: Requests\x7fCategory: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
         
          serializeParams: params = ( |
              out.
@@ -1046,7 +1078,7 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
             socket: self openConnection: url_obj.
 
             socket write: 'TRACE ', url_obj path, ' ', httpVersion, crlf.
-            socket write: 'Host: ', url_obj domain, crlf.
+            socket write: 'Host: ', url_obj composeHost, crlf.
             sendHeaders: headers To: socket.
             socket write: crlf.
 
