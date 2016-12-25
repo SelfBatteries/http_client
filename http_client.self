@@ -234,24 +234,6 @@ Ported by Bystroushaak.\x7fModuleInfo: Creator: globals http_client crc32.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Requests\x7fCategory: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
-        
-         getParamsToURL: requested_url Params: params = ( |
-             params_joiner.
-            | 
-
-            params == nil ifTrue: [^requested_url].
-            params size = 0 ifTrue: [^requested_url].
-
-            requested_url
-              findSubstring: '?'
-              IfPresent: [ params_joiner: '&' ]
-              IfAbsent: [ params_joiner: '?' ].
-
-            ^(requested_url, params_joiner, serializeGetParams: params)).
-        } | ) 
-
- bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
          'Category: Requests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
          getRequest: url Headers: headers Parameters: params = ( |
@@ -263,7 +245,7 @@ Ported by Bystroushaak.\x7fModuleInfo: Creator: globals http_client crc32.
             socket: self openConnection: url_obj.
 
             socket write: 'GET ',
-                           (getParamsToURL: (url_obj path) Params: params),
+                           (paramsToURL: (url_obj path) Params: params),
                            ' ',
                            httpVersion,
                            crlf.
@@ -356,6 +338,27 @@ foreach($_POST as $key => $value){
 ?>\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
         
          paramsTestURL = 'http://necpmvtsv.wz.cz/params.php'.
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Requests\x7fCategory: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
+         paramsToURL: requested_url Params: params = ( |
+             params_joiner.
+            | 
+
+            params == nil ifTrue: [^requested_url].
+            params size = 0 ifTrue: [^requested_url].
+
+            requested_url
+              findSubstring: '?'
+              IfPresent: [ params_joiner: '&' ]
+              IfAbsent: [ params_joiner: '?' ].
+
+            "for POST encoding"
+            requested_url = '' ifTrue: [params_joiner: ''].
+
+            ^(requested_url, params_joiner, serializeParams: params)).
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
@@ -671,13 +674,13 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
             socket: self openConnection: url_obj.
 
             socket write: 'POST ',
-                           (getParamsToURL: (url_obj path) Params: get_params),
+                           (paramsToURL: (url_obj path) Params: get_params),
                            ' ',
                            httpVersion,
                            crlf.
             socket write: 'Host: ', url_obj domain, crlf.
 
-            url_encoded_params: getParamsToURL: '' Params: post_params.
+            url_encoded_params: paramsToURL: '' Params: post_params.
 
             modified_headers: headers copy.
             modified_headers at: 'Content-Type'
@@ -807,7 +810,7 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
          'Category: Requests\x7fCategory: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
-         serializeGetParams: params = ( |
+         serializeParams: params = ( |
              out.
             | 
             params size = 0 ifTrue: [^''].
@@ -926,7 +929,7 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
         
          testGetParamsToURL: url Params: params Equals: val = ( |
             | 
-            ^assert: (getParamsToURL: url Params: params)
+            ^assert: (paramsToURL: url Params: params)
              Equals: val).
         } | ) 
 
@@ -935,9 +938,9 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
         
          testSerializeGetParams = ( |
             | 
-            assert: (serializeGetParams: test_blank_dict) Equals: ''.
-            assert: (serializeGetParams: test_one_element_dict) Equals: 'key=val'.
-            assert: (serializeGetParams: test_multi_element_dict)
+            assert: (serializeParams: test_blank_dict) Equals: ''.
+            assert: (serializeParams: test_one_element_dict) Equals: 'key=val'.
+            assert: (serializeParams: test_multi_element_dict)
               Equals: 'key=val&something=else&last=this%20is%20last%20value'.
 
             ^true).
