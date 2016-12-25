@@ -234,7 +234,7 @@ Ported by Bystroushaak.\x7fModuleInfo: Creator: globals http_client crc32.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Requests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+         'Category: Requests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: public'
         
          getRequest: url Headers: headers Parameters: params = ( |
              response.
@@ -263,7 +263,7 @@ Ported by Bystroushaak.\x7fModuleInfo: Creator: globals http_client crc32.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Requests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+         'Category: Requests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: public'
         
          headRequest: url Headers: headers = ( |
              response.
@@ -427,11 +427,9 @@ foreach($_POST as $key => $value){
             response body: ''.
 
             "Chunked requests"
-            transfer_encoding: response headers at: 'Transfer-Encoding' IfAbsent: nil.
-            transfer_encoding != nil ifTrue: [
-              transfer_encoding uncapitalizeAll = 'chunked'
-                ifTrue: [^readChunked: response].
-            ].
+            transfer_encoding: response headers at: 'Transfer-Encoding' IfAbsent: ''.
+            transfer_encoding uncapitalizeAll = 'chunked'
+              ifTrue: [^readChunked: response].
 
             "Requests specified by ContentLength"
             content_length: response headers at: 'Content-Length' IfAbsent: nil.
@@ -661,7 +659,7 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Requests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+         'Category: Requests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: public'
         
          postRequest: url Headers: headers GETParameters: get_params POSTParameters: post_params = ( |
              modified_headers.
@@ -763,6 +761,18 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
          'ModuleInfo: Module: http_client InitialContents: InitializeToExpression: (nil)'
         
          body.
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> 'response' -> () From: ( | {
+         'ModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
+         clone = ( |
+             res.
+            | 
+            res: parent.clone.
+            res headers: dictionary copy.
+
+            ^res).
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> 'response' -> () From: ( | {
@@ -1022,6 +1032,30 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
          'ModuleInfo: Module: http_client InitialContents: FollowSlot'
         
          tests* = bootstrap stub -> 'globals' -> 'tests' -> 'suite' -> ().
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Requests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: public'
+        
+         traceRequest: url Headers: headers = ( |
+             response.
+             socket.
+             url_obj.
+            | 
+            url_obj: parsed_url fromString: url.
+            socket: self openConnection: url_obj.
+
+            socket write: 'TRACE ', url_obj path, ' ', httpVersion, crlf.
+            socket write: 'Host: ', url_obj domain, crlf.
+            sendHeaders: headers To: socket.
+            socket write: crlf.
+
+            response: parseHeaders: socket.
+
+            socket close.
+            response socket: nil.
+
+            ^response).
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'modules' -> () From: ( | {
