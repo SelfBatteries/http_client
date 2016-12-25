@@ -843,7 +843,8 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
             "integration tests"
             run_integration ifTrue: [
               testChunked.
-              testGetParameters.
+              testGETRequest.
+              testPOSTRequest.
             ].
 
             ^ true).
@@ -870,14 +871,18 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
          'Category: Unittests\x7fCategory: Integration\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
         
-         testGetParameters = ( |
+         testGETRequest = ( |
              tmp.
             | 
             tmp: parseTestURLResult: (getRequest: paramsTestURL
                                       Headers: nil
                                       Parameters: test_one_element_dict).
-
             assert: tmp Equals: 'GET:\n\tkey=val\nPOST:'.
+
+            tmp: parseTestURLResult: (getRequest: paramsTestURL
+                                      Headers: nil
+                                      Parameters: test_multi_element_dict).
+            assert: tmp Equals: 'GET:\n\tkey=val\n\tsomething=else\n\tlast=this is last value\nPOST:'.
 
             ^true).
         } | ) 
@@ -931,6 +936,27 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
             | 
             ^assert: (paramsToURL: url Params: params)
              Equals: val).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Unittests\x7fCategory: Integration\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
+        
+         testPOSTRequest = ( |
+             tmp.
+            | 
+            tmp: parseTestURLResult: (postRequest: paramsTestURL
+                                      Headers: commonHeaders
+                                      GETParameters: nil
+                                      POSTParameters: test_one_element_dict).
+            assert: tmp Equals: 'GET:\nPOST:\n\tkey=val'.
+
+            tmp: parseTestURLResult: (postRequest: paramsTestURL
+                                      Headers: commonHeaders
+                                      GETParameters: test_one_element_dict
+                                      POSTParameters: test_multi_element_dict).
+            assert: tmp Equals: 'GET:\n\tkey=val\nPOST:\n\tkey=val\n\tsomething=else\n\tlast=this is last value'.
+
+            ^true).
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
