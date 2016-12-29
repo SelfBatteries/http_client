@@ -236,7 +236,7 @@ Ported by Bystroushaak.\x7fModuleInfo: Creator: globals http_client crc32.
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
          'Category: Requests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: public'
         
-         getRequest: url Headers: headers Parameters: params = ( |
+         getRequest: url Headers: headers Parameters: params Into: opened_stream = ( |
              response.
              socket.
              url_obj.
@@ -254,6 +254,7 @@ Ported by Bystroushaak.\x7fModuleInfo: Creator: globals http_client crc32.
             socket write: crlf.
 
             response: parseHeaders: socket.
+            response opened_stream: opened_stream.
             parseResponse: response.
 
             socket close.
@@ -423,8 +424,6 @@ foreach($_POST as $key => $value){
             (status_code = 204) ||
             (status_code = 304)
               ifTrue: [^response].
-
-            response body: ''.
 
             "Chunked requests"
             transfer_encoding: response headers at: 'Transfer-Encoding' IfAbsent: ''.
@@ -693,7 +692,7 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
          'Category: Requests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: public'
         
-         postRequest: url Headers: headers GETParameters: get_params POSTParameters: post_params = ( |
+         postRequest: url Headers: headers GETParameters: get_params POSTParameters: post_params Into: opened_stream = ( |
              modified_headers.
              response.
              socket.
@@ -724,6 +723,7 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
             socket write: crlf.
 
             response: parseHeaders: socket.
+            response opened_stream: opened_stream.
             parseResponse: response.
 
             socket close.
@@ -749,7 +749,7 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
 
               chunk_length: size_line shrinkwrapped hexAsInteger.
               chunk_length > 0
-                ifTrue: [response body: response body, (response socket readCount: chunk_length).].
+                ifTrue: [response write: (response socket readCount: chunk_length).].
             ] untilFalse: [ chunk_length != 0 ].
 
             ^response).
@@ -760,8 +760,10 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
         
          readContentLength: length Response: response = ( |
             | 
-            response body: response socket readCount: length
-                                  IfFail: [^response].
+            response write:
+              response socket
+                readCount: length
+                IfFail: [^response].
 
             ^response).
         } | ) 
@@ -774,7 +776,7 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
             | 
             [
               buffer: response socket readCount: 1024 IfFail: [^response].
-              response body: response_body, buffer.
+              response write: buffer.
             ] untilFalse: [response socket isLive && (buffer size != 0)].
 
             ^response).
@@ -820,6 +822,12 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> 'response' -> () From: ( | {
+         'ModuleInfo: Module: http_client InitialContents: InitializeToExpression: (nil.)'
+        
+         opened_stream.
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> 'response' -> () From: ( | {
          'ModuleInfo: Module: http_client InitialContents: FollowSlot'
         
          parent* = bootstrap stub -> 'traits' -> 'clonable' -> ().
@@ -835,6 +843,20 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
          'ModuleInfo: Module: http_client InitialContents: InitializeToExpression: (nil)'
         
          statusCode.
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> 'response' -> () From: ( | {
+         'Category: Internals\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+        
+         write: data = ( |
+            | 
+            opened_stream == nil
+              ifTrue: [
+                body == nil ifTrue: [body: ''].
+                body: body, data.
+              ] False: [
+                opened_stream write: data.
+              ]).
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
@@ -901,7 +923,8 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
             | 
             resp: getRequest: 'http://www.httpwatch.com/httpgallery/chunked/chunkedimage.aspx'
                   Headers: nil
-                  Parameters: nil.
+                  Parameters: nil
+                  Into: nil.
 
             crc_of_result: crc32 computeCRC: (resp body asString).
 
@@ -918,12 +941,14 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
             | 
             tmp: parseTestURLResult: (getRequest: paramsTestURL
                                       Headers: nil
-                                      Parameters: test_one_element_dict).
+                                      Parameters: test_one_element_dict
+                                      Into: nil).
             assert: tmp Equals: 'GET:\n\tkey=val\nPOST:'.
 
             tmp: parseTestURLResult: (getRequest: paramsTestURL
                                       Headers: nil
-                                      Parameters: test_multi_element_dict).
+                                      Parameters: test_multi_element_dict
+                                      Into: nil).
             assert: tmp Equals: 'GET:\n\tkey=val\n\tsomething=else\n\tlast=this is last value\nPOST:'.
 
             ^true).
@@ -989,13 +1014,15 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
             tmp: parseTestURLResult: (postRequest: paramsTestURL
                                       Headers: commonHeaders
                                       GETParameters: nil
-                                      POSTParameters: test_one_element_dict).
+                                      POSTParameters: test_one_element_dict
+                                      Into: nil).
             assert: tmp Equals: 'GET:\nPOST:\n\tkey=val'.
 
             tmp: parseTestURLResult: (postRequest: paramsTestURL
                                       Headers: commonHeaders
                                       GETParameters: test_one_element_dict
-                                      POSTParameters: test_multi_element_dict).
+                                      POSTParameters: test_multi_element_dict
+                                      Into: nil).
             assert: tmp Equals: 'GET:\n\tkey=val\nPOST:\n\tkey=val\n\tsomething=else\n\tlast=this is last value'.
 
             ^true).
