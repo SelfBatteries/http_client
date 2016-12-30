@@ -208,7 +208,7 @@ Ported by Bystroushaak.\x7fModuleInfo: Creator: globals http_client crc32.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Constants\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+         'Category: Constants\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
         
          crlf = '\x0d
 '.
@@ -231,6 +231,22 @@ Ported by Bystroushaak.\x7fModuleInfo: Creator: globals http_client crc32.
             dict: commonHeaders copy.
             dict at: 'User-Agent' Put: 'Mozilla/5.0 (Windows; U; Windows NT 5.1; cs; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.13'.
             ^dict).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Requests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: public'
+        
+         getRequest: url = ( |
+            | 
+            ^getRequest: url Parameters: nil).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Requests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: public'
+        
+         getRequest: url Headers: headers Parameters: params = ( |
+            | 
+            ^getRequest: url Headers: headers Parameters: params Into: nil).
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
@@ -266,6 +282,22 @@ Ported by Bystroushaak.\x7fModuleInfo: Creator: globals http_client crc32.
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
          'Category: Requests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: public'
         
+         getRequest: url Parameters: params = ( |
+            | 
+            ^getRequest: url Headers: commonHeaders Parameters: params).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Requests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: public'
+        
+         headRequest: url = ( |
+            | 
+            ^headRequest: url Headers: commonHeaders).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Requests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: public'
+        
          headRequest: url Headers: headers = ( |
              response.
              socket.
@@ -288,7 +320,7 @@ Ported by Bystroushaak.\x7fModuleInfo: Creator: globals http_client crc32.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Constants\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+         'Category: Constants\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
         
          httpVersion = 'HTTP/1.1'.
         } | ) 
@@ -692,6 +724,30 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
          'Category: Requests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: public'
         
+         postRequest: url GETParameters: get_params POSTParameters: post_params = ( |
+            | 
+            ^postRequest: url
+              Headers: commonHeaders
+              GETParameters: get_params
+              POSTParameters: post_params
+              Into: nil).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Requests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: public'
+        
+         postRequest: url Headers: headers GETParameters: get_params POSTParameters: post_params = ( |
+            | 
+            ^postRequest: url
+              Headers: headers
+              GETParameters: get_params
+              POSTParameters: post_params
+              Into: nil).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Requests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: public'
+        
          postRequest: url Headers: headers GETParameters: get_params POSTParameters: post_params Into: opened_stream = ( |
              modified_headers.
              response.
@@ -730,6 +786,18 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
             response socket: nil.
 
             ^response).
+        } | ) 
+
+ bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
+         'Category: Requests\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: public'
+        
+         postRequest: url POSTParameters: post_params = ( |
+            | 
+            ^postRequest: url
+              Headers: commonHeaders
+              GETParameters: nil
+              POSTParameters: post_params
+              Into: nil).
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
