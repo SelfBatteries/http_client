@@ -18,7 +18,7 @@ See the legal/LICENSE file for license information and legal/AUTHORS for authors
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Headers\x7fComment: Common subset of headers.\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+         'Category: Internals\x7fComment: Common subset of headers.\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
         
          commonHeaders <- bootstrap setObjectAnnotationOf: ( [|d|
 	d: dictionary copyRemoveAll.
@@ -40,7 +40,7 @@ SlotsToOmit: parent prototype.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Prototypes\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+         'Category: Internals\x7fCategory: Prototypes\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
          crc32 = bootstrap setObjectAnnotationOf: bootstrap stub -> 'globals' -> 'http_client' -> 'crc32' -> () From: ( |
              {} = 'Comment: Inspired by https://github.com/cristianav/PyCRC/
@@ -208,14 +208,14 @@ Ported by Bystroushaak.\x7fModuleInfo: Creator: globals http_client crc32.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Constants\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
+         'Category: Internals\x7fCategory: Constants\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
         
          crlf = '\x0d
 '.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Headers\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+         'Category: Headers\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: public'
         
          defaultHeaders = ( |
             | 
@@ -223,7 +223,7 @@ Ported by Bystroushaak.\x7fModuleInfo: Creator: globals http_client crc32.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Headers\x7fComment: Firefox headers on Windows XP\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+         'Category: Headers\x7fComment: Firefox headers on Windows XP\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: public'
         
          ffHeaders = ( |
              dict.
@@ -320,13 +320,13 @@ Ported by Bystroushaak.\x7fModuleInfo: Creator: globals http_client crc32.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Constants\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
+         'Category: Internals\x7fCategory: Constants\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: private'
         
          httpVersion = 'HTTP/1.1'.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Headers\x7fComment: Headers from Internet Explorer 7.0 on Windows XP\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+         'Category: Headers\x7fComment: Headers from Internet Explorer 7.0 on Windows XP\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: public'
         
          ieHeaders = ( |
              dict.
@@ -337,7 +337,7 @@ Ported by Bystroushaak.\x7fModuleInfo: Creator: globals http_client crc32.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Headers\x7fComment: Firefox headers on Linux\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+         'Category: Headers\x7fComment: Firefox headers on Linux\x7fModuleInfo: Module: http_client InitialContents: FollowSlot\x7fVisibility: public'
         
          lffHeaders = ( |
              dict.
@@ -484,7 +484,7 @@ foreach($_POST as $key => $value){
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Prototypes\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+         'Category: Internals\x7fCategory: Prototypes\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
          parsed_url <- bootstrap setObjectAnnotationOf: bootstrap stub -> 'globals' -> 'http_client' -> 'parsed_url' -> () From: ( |
              {} = 'Comment: I know that this is not the best possible
@@ -851,7 +851,7 @@ for simple HTTP client.\x7fModuleInfo: Creator: globals http_client parsed_url.
         } | ) 
 
  bootstrap addSlotsTo: bootstrap stub -> 'globals' -> 'http_client' -> () From: ( | {
-         'Category: Prototypes\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
+         'Category: Internals\x7fCategory: Prototypes\x7fModuleInfo: Module: http_client InitialContents: FollowSlot'
         
          response = bootstrap setObjectAnnotationOf: bootstrap stub -> 'globals' -> 'http_client' -> 'response' -> () From: ( |
              {} = 'ModuleInfo: Creator: globals http_client response.
