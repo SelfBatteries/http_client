@@ -1,4 +1,4 @@
-Aim of thAim of this project is to provide lightweight HTTP client library for the `Self programming language <http://selflanguage.org>`_.
+Aim of this project is to provide lightweight HTTP client library for the `Self programming language <http://www.selflanguage.org>`_.
 
 Be aware: This module is work in progress.
 
